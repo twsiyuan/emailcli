@@ -1,23 +1,23 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/jordan-wright/email"
-	"gopkg.in/alecthomas/kingpin.v2"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/smtp"
+	"os"
+
+	"github.com/jordan-wright/email"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
 	username = kingpin.Flag("username", "Username to authenticate to the SMTP server with").Envar("EMAIL_USERNAME").String()
 	password = kingpin.Flag("password", "Password to authenticate to the SMTP server with").Envar("EMAIL_PASSWORD").String()
 
-	//usetls = kingpin.Flag("use-tls", "Use TLS to authenticate").Envar("EMAIL_USETLS").Bool()
+	// usetls = kingpin.Flag("use-tls", "Use TLS to authenticate").Envar("EMAIL_USETLS").Bool()
 	host = kingpin.Flag("host", "Hostname").Envar("EMAIL_HOST").String()
 	port = kingpin.Flag("port", "Port number").Envar("EMAIL_PORT").Default("25").Uint16()
 
@@ -92,14 +92,14 @@ func main() {
 			println("Error creating email pool:", perr.Error())
 			return perr
 		}
-		//defer sendPool.Close()
+		// defer sendPool.Close()
 
 		for _, recipient := range *to {
 			m := email.NewEmail()
 			m.From = *from
 			m.To = []string{recipient}
 			m.Subject = *subject
-			m.Text = bodytxt
+			m.HTML = bodytxt
 
 			for _, filename := range *attachments {
 				_, err := m.AttachFile(filename)
@@ -115,7 +115,6 @@ func main() {
 		}
 		return nil
 	}()
-
 	if err != nil {
 		println("Error sending mail:", err.Error())
 		os.Exit(1)
